@@ -1,0 +1,42 @@
+qlib_init:
+  provider_uri: "~/.qlib/qlib_data/cn_data"
+  region: cn
+
+
+model_config: &model_config
+  input_size: 351
+  hidden_size: 128
+  num_layers: 2
+  num_heads: 4
+  use_attn: False
+  dropout: 0.3
+  num_expert: 32
+  topk: 8
+  gate_dim: 16
+
+num_states: &num_states 1
+
+tra_config: &tra_config
+  num_states: *num_states
+  hidden_size: 64
+  tau: 1.0
+  src_info: LR_TPE
+
+task:
+  model:
+    class: TRAModel
+    module_path: src/model_moe_vote.py 
+    kwargs:
+      lr: 0.0001
+      n_epochs: 500
+      max_steps_per_epoch: 200
+      early_stop: 20
+      seed: 1
+      logdir: output/500/vote/seed1
+      model_type: Transformer
+      model_config: *model_config
+      tra_config: *tra_config
+      lamb: 1.0
+      rho: 0.99
+      freeze_model: False
+      model_init_state: 
